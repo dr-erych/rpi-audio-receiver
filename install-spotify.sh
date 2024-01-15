@@ -7,8 +7,8 @@ echo -n "Do you want to install Spotify Connect (Raspotify)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-wget -q https://github.com/dtcooper/raspotify/releases/download/0.31.4/raspotify_0.31.4.librespot.v0.3.1-34-ge5fd7d6_armhf.deb
-dpkg -i raspotify_0.31.4.librespot.v0.3.1-34-ge5fd7d6_armhf.deb
+apt-get -y install curl && curl -O -sL https://github.com/dtcooper/raspotify/releases/download/0.31.8.1/raspotify_0.31.8.1.librespot.v0.3.1-54-gf4be9bb_armhf.deb
+apt install ./raspotify_0.31.8.1.librespot.v0.3.1-54-gf4be9bb_armhf.deb
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty | tr ' ' '-')
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
