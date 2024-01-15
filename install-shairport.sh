@@ -12,6 +12,17 @@ apt install -y --no-install-recommends build-essential git autoconf automake lib
     libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev \
     libplist-dev libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
 
+# install alac
+git clone https://github.com/mikebrady/alac.git
+cd alac
+autoreconf -fi
+./configure
+make
+make install
+ldconfig
+cd ..
+rm -rf alac
+
 # install nqptp
 git clone https://github.com/mikebrady/nqptp.git
 cd nqptp
