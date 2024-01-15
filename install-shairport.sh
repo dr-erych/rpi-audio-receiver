@@ -1,24 +1,35 @@
 #!/bin/bash -e
 
-SHAIRPORT_VERSION=3.3.1
-
 if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
 
 echo
-echo -n "Do you want to install Shairport Sync AirPlay 1 Audio Receiver (shairport-sync)? [y/N] "
+echo -n "Do you want to install Shairport Sync AirPlay 2 Audio Receiver (shairport-sync)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
 # install packages needed by shairport
-apt install --no-install-recommends -y build-essential git xmltoman autoconf automake libtool libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev
+apt install -y --no-install-recommends build-essential git autoconf automake libtool \
+    libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev \
+    libplist-dev libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
+
+# install nqptp
+git clone https://github.com/mikebrady/nqptp.git
+cd nqptp
+autoreconf -fi
+./configure --with-systemd-startup
+make
+make install
+cd ..
+rm -rf nqptp
 
 # install shairport-sync
 git clone https://github.com/mikebrady/shairport-sync.git
 cd shairport-sync
 autoreconf -fi
-./configure --sysconfdir=/etc --with-alsa --with-avahi --with-ssl=openssl --with-systemd
+./configure --sysconfdir=/etc --with-alsa \
+  --with-soxr --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2
 make
-sudo make install
+make install
 cd ..
 rm -rf shairport-sync
 
