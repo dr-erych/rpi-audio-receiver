@@ -17,7 +17,7 @@ git clone https://github.com/mikebrady/alac.git
 cd alac
 autoreconf -fi
 ./configure
-make
+make -j $(nproc)
 make install
 ldconfig
 cd ..
