@@ -51,4 +51,5 @@ PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 sed -i '0,/%H/{s://\tname = "%H:\tname = "'"${PRETTY_HOSTNAME}"':}' /etc/shairport-sync.conf
 sed -i 's://\tinterpolation = "auto:\tinterpolation = "basic:' /etc/shairport-sync.conf
 
-systemctl enable --now shairport-sync
+sudo systemctl enable --now nqptp
+sudo systemctl enable --now shairport-sync

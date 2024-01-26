@@ -14,8 +14,7 @@ apt update
 apt upgrade -y
 
 echo "Installing components"
-./install-bluetooth.sh
 ./install-shairport.sh
-./install-spotify.sh
+./install-spotifyd.sh
 ./install-snapcast-client.sh
-./enable-hifiberry.sh
+# ./enable-hifiberry.sh
