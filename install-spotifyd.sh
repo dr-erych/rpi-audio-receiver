@@ -32,7 +32,7 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/spotifyd --no-daemon --no-audio-cache --initial-volume 30 --device-type \"speaker\" --device-name \"$PRETTY_HOSTNAME\"
+ExecStart=/usr/bin/spotifyd --no-daemon --autoplay --initial-volume 30 --device-type \"speaker\" --device-name \"$PRETTY_HOSTNAME\"
 Restart=always 
 RestartSec=12
 
