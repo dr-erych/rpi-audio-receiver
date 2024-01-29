@@ -1,6 +1,6 @@
 ## Raspberry Pi Audio Receiver - Fork of Project from Nicokaiser working for raspberry pi zero w
 
-A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 1, Spotify Connect and Snapcast client.
+A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 2, Spotify Connect and Snapcast client.
 Original repository can be found [here](https://github.com/nicokaiser/rpi-audio-receiver).
 
 ## Features
@@ -31,17 +31,14 @@ All effects should come into play after restarting the device (mainly the device
 
 Lets you choose the hostname and the visible device name ("pretty hostname") which is displayed as Bluetooth name, in AirPlay clients and in Spotify.
 
-### Bluetooth
-
-Sets up Bluetooth, adds a simple agent that accepts every connection, and enables audio playback through Alsa (via BlueAlsa). A udev script is installed that disables discoverability while connected.
-
 ### AirPlay
 
 Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.
 
 ### Spotify Connect
 
-Installs a working version of [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi. The version 0.31.4  was the last version working without troubles with the RPi zero w. More information can be found in [this issue](https://github.com/dtcooper/raspotify/issues/504), especially [this comment](https://github.com/dtcooper/raspotify/issues/504#issuecomment-1022760874)
+~~Installs a working version of [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi. The version 0.31.4  was the last version working without troubles with the RPi zero w. More information can be found in [this issue](https://github.com/dtcooper/raspotify/issues/504), especially [this comment](https://github.com/dtcooper/raspotify/issues/504#issuecomment-1022760874)~~
+Installs [Spotifyd](https://github.com/Spotifyd/spotifyd)
 
 ### Snapcast client
 
