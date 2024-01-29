@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-# if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
-
 echo
 echo -n "Do you want to install Shairport Sync AirPlay 2 Audio Receiver (shairport-sync)? [y/N] "
 read REPLY

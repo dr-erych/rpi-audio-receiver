@@ -18,12 +18,10 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 The installation script asks whether to install each component.
 
-    wget -q https://github.com/dr-erych/rpi-audio-receiver/archive/rpi-zero-w.zip
-    unzip rpi-zero-w.zip
-    rm rpi-zero-w.zip
+    wget -q https://github.com/dr-erych/rpi-audio-receiver/archive/rpi-zero-w.zip && unzip rpi-zero-w.zip && rm rpi-zero-w.zip
 
     cd rpi-audio-receiver-rpi-zero-w
-    sudo ./install.sh
+    ./install.sh
     
 All effects should come into play after restarting the device (mainly the device hostname).
 

@@ -1,35 +1,29 @@
 #!/bin/bash -e
 
-if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
+read -p "Do you want to install Bluetooth Audio (ALSA)? [y/N] " REPLY
+if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then return; fi
 
-echo
-echo -n "Do you want to install Bluetooth Audio (BlueALSA)? [y/N] "
-read REPLY
-if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
-
-apt install -y --no-install-recommends alsa-base alsa-utils bluealsa bluez-tools
+# Bluetooth Audio ALSA Backend (bluez-alsa-utils)
+sudo apt update
+sudo apt install -y --no-install-recommends bluez-tools bluez-alsa-utils
 
 # Bluetooth settings
-cat <<'EOF' > /etc/bluetooth/main.conf
+sudo tee /etc/bluetooth/main.conf >/dev/null <<'EOF'
 [General]
 Class = 0x200414
 DiscoverableTimeout = 0
+
 [Policy]
 AutoEnable=true
 EOF
 
-# Make Bluetooth discoverable after initialisation
-mkdir -p /etc/systemd/system/bthelper@.service.d
-cat <<'EOF' > /etc/systemd/system/bthelper@.service.d/override.conf
-[Service]
-Type=oneshot
-EOF
-
-cat <<'EOF' > /etc/systemd/system/bt-agent@.service
+# Bluetooth Agent
+sudo tee /etc/systemd/system/bt-agent@.service >/dev/null <<'EOF'
 [Unit]
 Description=Bluetooth Agent
 Requires=bluetooth.service
 After=bluetooth.service
+
 [Service]
 ExecStartPre=/usr/bin/bluetoothctl discoverable on
 ExecStartPre=/bin/hciconfig %I piscan
@@ -38,61 +32,37 @@ ExecStart=/usr/bin/bt-agent --capability=NoInputNoOutput
 RestartSec=5
 Restart=always
 KillSignal=SIGUSR1
+
 [Install]
 WantedBy=multi-user.target
 EOF
-systemctl enable bt-agent@hci0.service
 
-# ALSA settings
-sed -i.orig 's/^options snd-usb-audio index=-2$/#options snd-usb-audio index=-2/' /lib/modprobe.d/aliases.conf
+sudo systemctl daemon-reload
+sudo systemctl enable bt-agent@hci0.service
 
-# BlueALSA
-mkdir -p /etc/systemd/system/bluealsa.service.d
-cat <<'EOF' > /etc/systemd/system/bluealsa.service.d/override.conf
-[Service]
-ExecStart=
-ExecStart=/usr/bin/bluealsa -i hci0 -p a2dp-sink
-RestartSec=5
-Restart=always
-EOF
-
-cat <<'EOF' > /etc/systemd/system/bluealsa-aplay.service
-[Unit]
-Description=BlueALSA aplay
-Requires=bluealsa.service
-After=bluealsa.service sound.target
-[Service]
-Type=simple
-User=root
-ExecStartPre=/bin/sleep 2
-ExecStart=/usr/bin/bluealsa-aplay --pcm-buffer-time=250000 00:00:00:00:00:00
-RestartSec=5
-Restart=always
-[Install]
-WantedBy=multi-user.target
-EOF
-systemctl daemon-reload
-systemctl enable bluealsa-aplay
 
 # Bluetooth udev script
-cat <<'EOF' > /usr/local/bin/bluetooth-udev
+sudo tee /usr/local/bin/bluetooth-udev >/dev/null <<'EOF'
 #!/bin/bash
 if [[ ! $NAME =~ ^\"([0-9A-F]{2}[:-]){5}([0-9A-F]{2})\"$ ]]; then exit 0; fi
+
 action=$(expr "$ACTION" : "\([a-zA-Z]\+\).*")
+
 if [ "$action" = "add" ]; then
     bluetoothctl discoverable off
     # disconnect wifi to prevent dropouts
     #ifconfig wlan0 down &
 fi
+
 if [ "$action" = "remove" ]; then
     # reenable wifi
     #ifconfig wlan0 up &
     bluetoothctl discoverable on
 fi
 EOF
-chmod 755 /usr/local/bin/bluetooth-udev
+sudo chmod 755 /usr/local/bin/bluetooth-udev
 
-cat <<'EOF' > /etc/udev/rules.d/99-bluetooth-udev.rules
+sudo tee /etc/udev/rules.d/99-bluetooth-udev.rules >/dev/null <<'EOF'
 SUBSYSTEM=="input", GROUP="input", MODE="0660"
 KERNEL=="input[0-9]*", RUN+="/usr/local/bin/bluetooth-udev"
 EOF
