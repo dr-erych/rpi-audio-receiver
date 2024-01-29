@@ -18,7 +18,7 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 The installation script asks whether to install each component.
 
-    wget -q https://github.com/Arcadia197/rpi-audio-receiver/archive/rpi-zero-w.zip
+    wget -q https://github.com/dr-erych/rpi-audio-receiver/archive/rpi-zero-w.zip
     unzip rpi-zero-w.zip
     rm rpi-zero-w.zip
 
@@ -46,7 +46,7 @@ Installs [Snapclient](https://github.com/badaix/snapcast), the client component 
 
 ## Wiki
 
-There are some further examples, tweaks and how-tos in the [GitHub Wiki](https://github.com/Arcadia197/rpi-audio-receiver/wiki) or the [wiki of the original repo](github.com/nicokaiser/rpi-audio-receiver/wiki).
+There are some further examples, tweaks and how-tos in the [GitHub Wiki](https://github.com/dr-erych/rpi-audio-receiver/wiki) or the [wiki of the original repo](github.com/nicokaiser/rpi-audio-receiver/wiki).
 
 ## Disclaimer
 
