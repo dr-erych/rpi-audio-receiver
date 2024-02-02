@@ -23,6 +23,8 @@ sudo tar -C /usr/bin/ -xzf spotifyd-linux-armv6-slim.tar.gz
 rm spotifyd-linux-armv6-slim.tar.gz
 echo "Extraction complete"
 
+mkdir -p ~/.config/systemd/user/
+
 echo "[Unit]
 Description=A spotify playing daemon
 Documentation=https://github.com/Spotifyd/spotifyd
@@ -32,12 +34,15 @@ Wants=network-online.target
 After=network-online.target
 
 [Service]
-ExecStart=/usr/bin/spotifyd --no-daemon --autoplay --initial-volume 30 --device-type \"speaker\" --device-name \"$PRETTY_HOSTNAME\"
+ExecStart=/usr/bin/spotifyd --no-daemon --initial-volume 30 --device-type \"speaker\" --device-name \"$PRETTY_HOSTNAME\"
 Restart=always 
 RestartSec=12
 
 [Install]
-WantedBy=default.target" | sudo tee /lib/systemd/system/spotifyd.service
+WantedBy=default.target" | sudo tee ~/.config/systemd/user/spotifyd.service
 
-sudo systemctl daemon-reload
-sudo systemctl enable --now spotifyd
+USERNAME=$(who | awk 'NR==1{print $1}')
+
+systemctl --user daemon-reload
+sudo loginctl enable-linger $USERNAME
+systemctl --user enable spotifyd.service

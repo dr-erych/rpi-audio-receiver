@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-if [[ $(id -u) -ne 0 ]] ; then echo "Please run as root" ; exit 1 ; fi
-
 echo
 echo -n "Do you want to enable HiFiBerry device tree overlay and ALSA configuration? [y/N] "
 read REPLY
@@ -11,7 +9,7 @@ echo -n "Which board do you want to enable? [dac/dacplus/dacplusadc/dacplusadcpr
 read CARD
 if [[ ! "$CARD" =~ ^(dac|dacplus|digi|amp)$ ]]; then exit 1; fi
 
-cat <<'EOF' > /etc/asound.conf
+sudo tee /etc/asound.conf >/dev/null <<EOF
 defaults.pcm.card 0
 defaults.ctl.card 0
 
@@ -62,4 +60,5 @@ EOF
 
 cat /boot/config.txt | grep -vi "dtparam=audio" | grep -vi hifiberry >/tmp/config.txt
 echo dtoverlay=hifiberry-${CARD} >>/tmp/config.txt
-mv /tmp/config.txt /boot/config.txt
+sudo chown $(sudo id -u):$(sudo id -g) /tmp/config.txt
+sudo mv /tmp/config.txt /boot/config.txt
