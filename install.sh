@@ -18,6 +18,6 @@ sudo apt upgrade -y
 
 echo "Installing components"
 ./install-shairport.sh
-./install-spotifyd.sh
+./install-spotify-go.sh
 ./install-snapcast-client.sh
 # ./enable-hifiberry.sh
