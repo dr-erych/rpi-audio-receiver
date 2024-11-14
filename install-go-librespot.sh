@@ -19,19 +19,18 @@ ARCH=$(uname -m)
 if [ $ARCH = "armv6l" ]; then
 	ARCH="armv6_rpi"
 elif [ $ARCH = "armv7l" ] || [ $ARCH = "armv8" ] || [ $ARCH = "armhf" ]; then
-        ARCH="armv6"
+  ARCH="armv6"
 elif  [ $ARCH = "arm64" ] || [ $ARCH = "aarch64" ]; then
 	ARCH="arm64"
 else
 	echo "Platform not supported" 
-        exit 1
+  exit 1
 fi
 
 
-DAEMON_BASE_URL=https://github.com/devgianlu/go-librespot/releases/download/v
-VERSION=0.1.0
+DAEMON_BASE_URL=https://github.com/devgianlu/go-librespot/releases/latest/download/
 DAEMON_ARCHIVE=go-librespot_linux_$ARCH.tar.gz
-DAEMON_DOWNLOAD_URL=$DAEMON_BASE_URL$VERSION/$DAEMON_ARCHIVE
+DAEMON_DOWNLOAD_URL=$DAEMON_BASE_URL/$DAEMON_ARCHIVE
 DAEMON_DOWNLOAD_PATH=$DAEMON_ARCHIVE
 
 echo "Dowloading daemon"

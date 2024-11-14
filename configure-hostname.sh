@@ -15,9 +15,3 @@ sudo ln -sfn ~/.asoundrc /etc/asound.conf
 echo "Updating packages"
 sudo apt update
 sudo apt upgrade -y
-
-echo "Installing components"
-./install-shairport.sh
-./install-spotify-go.sh
-./install-snapcast-client.sh
-# ./enable-hifiberry.sh
