@@ -27,6 +27,7 @@ else
   exit 1
 fi
 
+sudo apt-get install -y libogg-dev libvorbis-dev libasound2-dev
 
 DAEMON_BASE_URL=https://github.com/devgianlu/go-librespot/releases/latest/download/
 DAEMON_ARCHIVE=go-librespot_linux_$ARCH.tar.gz

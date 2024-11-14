@@ -34,24 +34,24 @@ rm -rf alac-master
 # Install NQPTP
 wget -O nqptp.zip https://github.com/mikebrady/nqptp/archive/refs/heads/main.zip
 unzip nqptp.zip
-cd nqptp
+cd nqptp-main
 autoreconf -fi
 ./configure --with-systemd-startup
 make -j $(nproc)
 sudo make install
 cd ..
-rm -rf nqptp
+rm -rf nqptp-main
 
 # Install Shairport Sync
 wget -O shairport-sync.zip https://github.com/mikebrady/shairport-sync/archive/refs/heads/master.zip
 unzip shairport-sync.zip
-cd shairport-sync
+cd shairport-sync-master
 autoreconf -fi
 ./configure --sysconfdir=/etc --with-alsa --with-soxr --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2 --with-apple-alac
 make -j $(nproc)
 sudo make install
 cd ..
-rm -rf shairport-sync
+rm -rf shairport-sync-master
 
 # Configure Shairport Sync
 sudo tee /etc/shairport-sync.conf >/dev/null <<EOF
