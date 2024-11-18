@@ -9,7 +9,6 @@ cat << EOF > $CONFIG_DIR/config.yml
 device_name: $PRETTY_HOSTNAME
 initial_volume: 20
 device_type: speaker
-mixer_control_name: Master
 EOF
 
 
