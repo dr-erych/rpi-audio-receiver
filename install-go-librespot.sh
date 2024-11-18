@@ -52,7 +52,7 @@ echo "#!/bin/sh
 export GOTRACEBACK=crash
 
 echo 'Librespot-go daemon starting...'
-/usr/bin/go-librespot --config_dir $CONFIG_DIR | sudo tee /bin/start-go-librespot.sh
+/usr/bin/go-librespot --config_dir $CONFIG_DIR" | sudo tee /bin/start-go-librespot.sh
 
 sudo chmod a+x /bin/start-go-librespot.sh
 
