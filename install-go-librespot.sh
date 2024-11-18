@@ -3,12 +3,13 @@
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
-cat << EOF > $HOME/go-librespot-config.yml
+CONFIG_DIR = $HOME/.config/go-librespot
+[ -d $CONFIG_DIR ] || mkdir -p $CONFIG_DIR
+cat << EOF > $CONFIG_DIR/config.yml
 device_name: $PRETTY_HOSTNAME
-credentials:
-  type: zeroconf
-server_port: 5050
-normalisation_disabled: true
+initial_volume: 20
+device_type: speaker
+mixer_control_name: Master
 EOF
 
 
@@ -50,12 +51,8 @@ echo "#!/bin/sh
 # Traceback Setting
 export GOTRACEBACK=crash
 
-# Data dir
-DAEMON_DATA_PATH=/data/go-librespot/
-[ -d $DAEMON_DATA_PATH ] || mkdir $DAEMON_DATA_PATH
-
 echo 'Librespot-go daemon starting...'
-/usr/bin/go-librespot -config_path $HOME/go-librespot-config.yml" | sudo tee /bin/start-go-librespot.sh
+/usr/bin/go-librespot --config_dir $CONFIG_DIR | sudo tee /bin/start-go-librespot.sh
 
 sudo chmod a+x /bin/start-go-librespot.sh
 
