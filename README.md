@@ -1,6 +1,6 @@
 ## Raspberry Pi Audio Receiver - Fork of Project from Nicokaiser working for raspberry pi zero w
 
-A simple, light weight audio receiver with Bluetooth (A2DP), AirPlay 2, Spotify Connect and Snapcast client.
+A simple, light weight audio receiver with AirPlay 2 and Spotify Connect client.
 Original repository can be found [here](https://github.com/nicokaiser/rpi-audio-receiver).
 
 ## Features
@@ -9,10 +9,8 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 ## Requirements
 
-- RaspberryPi Zero W with internal Bluetooth or a USB Bluetooth dongle. Using the internal Bluetooth is possible but might lead to audio distortions if using other network heavy services
-- Raspberry Pi OS Buster Lite (legacy)
-    - Please note: This version **does not** work with Raspberry Pi OS Bullseye or newer versions, as the zero 1 w chip cannot handle Bluetooth audio with Pulseaudio
-- Internal audio, HDMI, USB or I2S Audio adapter (tested with [Adafruit USB Audio Adapter](https://www.adafruit.com/product/1475),  [pHAT DAC](https://shop.pimoroni.de/products/phat-dac), and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
+- RaspberryPi Zero W or Zero W 2
+- Internal audio, HDMI, USB or I2S Audio adapter (tested with [SABRENT USB External USB Sound Card](https://www.amazon.de/gp/product/B00IRVQ0F8/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1) and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
 
 ## Installation
 
@@ -42,28 +40,19 @@ All effects should come into play after restarting the device (mainly the device
 
 ### Basic setup
 
-Lets you choose the hostname and the visible device name ("pretty hostname") which is displayed as Bluetooth name, in AirPlay clients and in Spotify.
+Lets you choose the hostname and the visible device name ("pretty hostname") which is displayed in AirPlay clients and in Spotify.
 
-### AirPlay
+### AirPlay 2
 
-Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay Audio Receiver.
+Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay 2 Audio Receiver with all components needed to allow Synchronized Audio.
 
 ### Spotify Connect
 
-~~Installs a working version of [Raspotify](https://github.com/dtcooper/raspotify), an open source Spotify client for Raspberry Pi. The version 0.31.4  was the last version working without troubles with the RPi zero w. More information can be found in [this issue](https://github.com/dtcooper/raspotify/issues/504), especially [this comment](https://github.com/dtcooper/raspotify/issues/504#issuecomment-1022760874)~~
-Installs [Spotifyd](https://github.com/Spotifyd/spotifyd)
-
-### Snapcast client
-
-Installs [Snapclient](https://github.com/badaix/snapcast), the client component of the Snapcast Synchronous multi-room audio player.
-
-## Wiki
-
-There are some further examples, tweaks and how-tos in the [GitHub Wiki](https://github.com/dr-erych/rpi-audio-receiver/wiki) or the [wiki of the original repo](github.com/nicokaiser/rpi-audio-receiver/wiki).
+Depending on your system, install go-librespot or raspotify.
 
 ## Disclaimer
 
-These scripts are tested and work on a current Raspberry Pi OS Legacy setup on Raspberry Pi Zero W 1. Depending on your setup (board, configuration, sound module, Bluetooth adapter) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
+These scripts are tested and work on a current Raspberry Pi OS Legacy setup on Raspberry Pi Zero W 1. Depending on your setup (board, configuration, sound module) and your preferences, you might need to adjust the scripts. They are held as simple as possible and can be used as a starting point for additional adjustments.
 
 ## Upgrading
 
@@ -76,9 +65,7 @@ Updating the system using `apt-get upgrade` should work however.
 This project does not support uninstall at all. As stated above, it is meant to run on a dedicated device on a clean Raspberry Pi OS. If you choose to use this script along with other services on the same device, or install it on an already configured device, this can lead to unpredictable behaviour and can damage the existing installation permanently.
 However, the important modules can be purged with the following commands. This does however not remove residual files and is experimental:
 
-    sudo apt-get purge raspotify shairport-sync snapclient
-    sudo systemctl disable bthelper@hci0.service bt-agent@hci0.service
-    sudo systemctl stop bthelper@hci0.service bt-agent@hci0.service
+    sudo apt-get purge raspotify shairport-sync
 
 [This site](https://github.com/mikebrady/shairport-sync/blob/master/INSTALL.md) gives information on residual files of shairplay which could be checked for removal.
 
@@ -91,7 +78,7 @@ Package and configuration choices are quite opinionated but as close to the Debi
 
 - [Shairport Sync: AirPlay Audio Receiver](https://github.com/mikebrady/shairport-sync)
 - [Raspotify: Spotify Connect client for the Raspberry Pi that Just Works™](https://github.com/dtcooper/raspotify)
-- [Snapcast: Synchronous audio player](https://github.com/badaix/snapcast)
+- [Go Librespot: Yet another open-source Spotify Connect compatible client, written in Go.](https://github.com/devgianlu/go-librespot)
 
 ## License
 
