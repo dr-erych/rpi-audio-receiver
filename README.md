@@ -21,7 +21,22 @@ The installation script asks whether to install each component.
     wget -q https://github.com/dr-erych/rpi-audio-receiver/archive/rpi-zero-w.zip && unzip rpi-zero-w.zip && rm rpi-zero-w.zip
 
     cd rpi-audio-receiver-rpi-zero-w
-    ./install.sh
+
+    // Update packages and set pretty hostname
+    $ ./initialize.sh
+
+    // Sound card
+    // depeding on your needs, one of the following:
+    $ ./enable-hifiberry.sh
+    $ ./enable-usb-audio.sh
+    $ ./install-maudio-drivers.sh
+
+    // Spotify Connect
+    $ ./install-go-librespot.sh  // for Raspberry Pi Zero W v1.x
+    $ ./install-raspotify.sh     // for Raspberry Pi Zero W 2 and Raspberry Pi >2
+
+    // Airplay 2
+    $ ./install-shairport-sync.sh
     
 All effects should come into play after restarting the device (mainly the device hostname).
 
