@@ -3,7 +3,7 @@
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
-CONFIG_DIR = $HOME/.config/go-librespot
+CONFIG_DIR=$HOME/.config/go-librespot
 [ -d $CONFIG_DIR ] || mkdir -p $CONFIG_DIR
 cat << EOF > $CONFIG_DIR/config.yml
 device_name: $PRETTY_HOSTNAME
