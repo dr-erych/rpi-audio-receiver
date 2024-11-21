@@ -31,7 +31,7 @@ The installation script asks whether to install each component.
 
     // Spotify Connect
     $ ./install-go-librespot.sh  // for Raspberry Pi Zero W v1.x
-    $ ./install-raspotify.sh     // for Raspberry Pi Zero W 2 and Raspberry Pi >2
+    $ ./install-raspotify.sh     // for Raspberry Pi Zero W 2 and Raspberry Pi >= 2
 
     // Airplay 2
     $ ./install-shairport-sync.sh
