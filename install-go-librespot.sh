@@ -61,6 +61,8 @@ echo "[Unit]
 Description = go-librespot Daemon
 
 [Service]
+After=network-online.target
+Wants=network-online.target
 ExecStart=/bin/start-go-librespot.sh
 Restart=always
 RestartSec=3
