@@ -5,38 +5,25 @@ echo -n "Do you want to enable HiFiBerry device tree overlay and ALSA configurat
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
-echo -n "Which board do you want to enable? [dac/dacplus/dacplusadc/dacplusadcpro/dacplusdsp/digi/digipro/amp] "
+echo -n "Which board do you want to enable? [dac/dacplus-std/dacplus-pro/dacplusadc/dacplusadcpro/dacplusdsp/digi/digipro/amp] "
 read CARD
-if [[ ! "$CARD" =~ ^(dac|dacplus|digi|amp)$ ]]; then exit 1; fi
+if [[ ! "$CARD" =~ ^(dac|dacplus.+|digi|amp)$ ]]; then exit 1; fi
+
+rm -f ~/.asoundrc ~/.asound.conf ~/asound.conf
 
 sudo tee /etc/asound.conf >/dev/null <<EOF
 pcm.!default {
-  type asym
-  playback.pcm {
-    type plug
-    slave.pcm "output"
-  }
-  capture.pcm {
-    type plug
-    slave.pcm "input"
-  }
+  type hw card 0
 }
-
-pcm.output {
-  type hw
-  card 1
-}
-
 ctl.!default {
-  type hw
-  card 1
+  type hw card 0
 }
 EOF
 
-sudo amixer sset 'Softvol' 100%
-sudo alsactl store
 
-cat /boot/config.txt | grep -vi "dtparam=audio" | grep -vi hifiberry >/tmp/config.txt
+cat /boot/firmware/config.txt | grep -vi "dtparam=audio" | grep -vi "hifiberry" >/tmp/config.txt
+sed -i -e s/dtoverlay=vc4-kms-v3d/dtoverlay=vc4-kms-v3d,noaudio/g /tmp/config.txt
 echo dtoverlay=hifiberry-${CARD} >>/tmp/config.txt
+
 sudo chown $(sudo id -u):$(sudo id -g) /tmp/config.txt
-sudo mv /tmp/config.txt /boot/config.txt
+sudo mv /tmp/config.txt /boot/firmware/config.txt
