@@ -39,6 +39,8 @@ autoreconf -fi
 ./configure --with-systemd-startup
 make -j $(nproc)
 sudo make install
+sudo setcap 'cap_net_bind_service=+ep' /usr/local/bin/nqptp
+sudo systemctl restart nqptp.service
 cd ..
 rm -rf nqptp-main
 
