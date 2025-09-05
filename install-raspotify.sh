@@ -22,4 +22,4 @@ PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 sed -i 's:#LIBRESPOT_NAME="Librespot:LIBRESPOT_NAME="'"${PRETTY_HOSTNAME}"':' /etc/raspotify/conf
 sed -i 's:#LIBRESPOT_INITIAL_VOLUME="50":LIBRESPOT_INITIAL_VOLUME="20":' /etc/raspotify/conf
 
-systemctl restart raspotify
+sudo systemctl restart raspotify
