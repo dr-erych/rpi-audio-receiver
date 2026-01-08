@@ -19,7 +19,7 @@ PRETTY_HOSTNAME=$(hostnamectl status --pretty | tr ' ' '-')
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
 # change settings to work for raspberry pi zero
-sed -i 's:#LIBRESPOT_NAME="Librespot:LIBRESPOT_NAME="'"${PRETTY_HOSTNAME}"':' /etc/raspotify/conf
-sed -i 's:#LIBRESPOT_INITIAL_VOLUME="50":LIBRESPOT_INITIAL_VOLUME="20":' /etc/raspotify/conf
+sudo sed -i 's:#LIBRESPOT_NAME="Librespot:LIBRESPOT_NAME="'"${PRETTY_HOSTNAME}"':' /etc/raspotify/conf
+sudo sed -i 's:#LIBRESPOT_INITIAL_VOLUME="50":LIBRESPOT_INITIAL_VOLUME="20":' /etc/raspotify/conf
 
 sudo systemctl restart raspotify
