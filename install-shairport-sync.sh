@@ -119,4 +119,5 @@ sudo systemctl daemon-reload
 sudo systemctl enable shairport-sync
 sudo systemctl restart shairport-sync
 
+echo
 echo "✅ Shairport Sync installation complete."

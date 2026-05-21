@@ -62,5 +62,6 @@ if [ -f "$TARGET_HOME/.asoundrc" ]; then
   sudo mv "$TARGET_HOME/.asoundrc" "$TARGET_HOME/.asoundrc.backup.$(date +%Y%m%d-%H%M%S)"
 fi
 
+echo
 echo "✅ M-Audio MobilePre setup complete."
 echo "🔁 Reboot required: sudo reboot"

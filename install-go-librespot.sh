@@ -102,4 +102,5 @@ sudo systemctl enable go-librespot-daemon
 sudo systemd-analyze verify /lib/systemd/system/go-librespot-daemon.service
 sudo systemctl restart go-librespot-daemon
 
+echo
 echo "✅ go-librespot installation complete."

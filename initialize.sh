@@ -17,4 +17,5 @@ echo
 sudo apt update
 sudo apt upgrade -y
 
+echo
 echo "✅ Setup complete."

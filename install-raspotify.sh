@@ -26,4 +26,5 @@ sudo sed -i 's:#LIBRESPOT_INITIAL_VOLUME="50":LIBRESPOT_INITIAL_VOLUME="20":' /e
 
 sudo systemctl restart raspotify
 
+echo
 echo "✅ Raspotify installation complete."
