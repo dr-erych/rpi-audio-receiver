@@ -3,6 +3,13 @@
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
+GO_LIBRESPOT_VERSION="${GO_LIBRESPOT_VERSION:-$(wget -qO- https://api.github.com/repos/devgianlu/go-librespot/releases/latest | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p' | head -n 1)}"
+
+if [ -z "$GO_LIBRESPOT_VERSION" ]; then
+  echo "Could not determine the latest go-librespot release." >&2
+  exit 1
+fi
+
 TARGET_USER=${SUDO_USER:-$USER}
 TARGET_GROUP=$(id -gn "$TARGET_USER")
 TARGET_HOME=$(getent passwd "$TARGET_USER" | cut -d: -f6)
@@ -43,11 +50,11 @@ case "$ARCH" in
     ;;
 esac
 
-echo "📦 Installing go-librespot"
+echo "📦 Installing go-librespot ${GO_LIBRESPOT_VERSION}"
 echo
 sudo apt-get install -y libogg-dev libvorbis-dev libasound2-dev
 
-DAEMON_BASE_URL="https://github.com/devgianlu/go-librespot/releases/latest/download"
+DAEMON_BASE_URL="https://github.com/devgianlu/go-librespot/releases/download/$GO_LIBRESPOT_VERSION"
 DAEMON_ARCHIVE="go-librespot_linux_$ARCH.tar.gz"
 DAEMON_DOWNLOAD_URL="$DAEMON_BASE_URL/$DAEMON_ARCHIVE"
 DAEMON_DOWNLOAD_PATH="/tmp/$DAEMON_ARCHIVE"

@@ -8,14 +8,13 @@ else
   exit 1
 fi
 
-echo
-echo -n "Do you want to install Spotify Connect (Raspotify)? [y/N] "
-read REPLY
-if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
-
 echo "📦 Installing Raspotify"
 echo
 sudo apt-get -y install curl && curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
+RASPOTIFY_VERSION=$(dpkg-query -W -f='${Version}' raspotify)
+
+echo "📦 Installed Raspotify ${RASPOTIFY_VERSION}"
+echo
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty | tr ' ' '-')
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
