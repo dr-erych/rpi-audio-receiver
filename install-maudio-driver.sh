@@ -61,3 +61,4 @@ if [ -f "$TARGET_HOME/.asoundrc" ]; then
 fi
 
 echo "Please reboot now."
+echo "sudo reboot"

@@ -103,7 +103,3 @@ sudo systemctl daemon-reload
 sudo systemctl enable go-librespot-daemon
 sudo systemd-analyze verify /lib/systemd/system/go-librespot-daemon.service
 sudo systemctl restart go-librespot-daemon
-
-
-#required to end the plugin install
-echo "plugininstallend"
