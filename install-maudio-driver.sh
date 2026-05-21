@@ -16,4 +16,36 @@ rm -rf madfu-firmware/
 echo 'blacklist snd_bcm2835' | sudo tee /etc/modprobe.d/blacklist-onboard-audio.conf
 sudo sed -e '/options snd-usb-audio index=-2/ s/^#*/#/' -i /lib/modprobe.d/aliases.conf
 
+# Use the stable ALSA card name instead of a numeric card index.
+# Numeric ALSA indexes such as card 0/card 1 can change depending on boot timing,
+# especially after power loss. MobilePre is the expected USB audio interface.
+cat << 'EOF' | sudo tee /etc/asound.conf > /dev/null
+pcm.!default {
+  type asym
+  playback.pcm {
+    type plug
+    slave.pcm "output"
+  }
+  capture.pcm {
+    type plug
+    slave.pcm "input"
+  }
+}
+
+pcm.output {
+  type plug
+  slave.pcm "hw:CARD=MobilePre,DEV=0"
+}
+
+pcm.input {
+  type plug
+  slave.pcm "hw:CARD=MobilePre,DEV=0"
+}
+
+ctl.!default {
+  type hw
+  card MobilePre
+}
+EOF
+
 echo "Please reboot now."

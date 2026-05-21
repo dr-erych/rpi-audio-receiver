@@ -27,7 +27,7 @@ The installation script asks whether to install each component.
     // depeding on your needs, one of the following:
     $ ./enable-hifiberry.sh
     $ ./enable-usb-audio.sh
-    $ ./install-maudio-drivers.sh
+    $ ./install-maudio-driver.sh
 
     // Spotify Connect
     $ ./install-go-librespot.sh  // for Raspberry Pi Zero W v1.x
@@ -49,6 +49,33 @@ Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay 2
 ### Spotify Connect
 
 Depending on your system, install go-librespot or raspotify.
+
+## Troubleshooting
+
+### Spotify sees the receiver, but playback fails after a power cut
+
+If Spotify can see the device but playback fails with:
+
+```text
+ALSA error at snd_pcm_open: Unknown error 524
+```
+
+check the ALSA devices, system-wide ALSA config, and go-librespot logs:
+
+```bash
+aplay -l
+cat /etc/asound.conf
+journalctl -u go-librespot-daemon -b --no-pager -n 80
+```
+
+`/etc/asound.conf` should target `CARD=MobilePre`, not `card 0`. ALSA numeric card indexes can change across boots, especially after power loss. `go-librespot` should use `audio_device: default`, and ALSA should define the default device as the MobilePre.
+
+Basic service checks:
+
+```bash
+systemctl status go-librespot-daemon --no-pager -l
+journalctl -u go-librespot-daemon -b --no-pager -n 80
+```
 
 ## Disclaimer
 
