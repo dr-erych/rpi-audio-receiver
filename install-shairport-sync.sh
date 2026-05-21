@@ -7,8 +7,8 @@ latest_stable_tag() {
   local repo="$1"
   local tag
 
-  tag=$(git ls-remote --tags --refs "https://github.com/${repo}.git" \
-    | sed -n 's#.*refs/tags/##p' \
+  tag=$(wget -qO- "https://api.github.com/repos/${repo}/tags?per_page=100" \
+    | sed -n 's/.*"name": *"\([^"]*\)".*/\1/p' \
     | grep -E '^[0-9]+([.][0-9]+)*$' \
     | sort -V \
     | tail -n 1)
@@ -21,8 +21,18 @@ latest_stable_tag() {
   printf '%s\n' "$tag"
 }
 
+download_release_archive() {
+  local repo="$1"
+  local tag="$2"
+  local directory="$3"
+
+  mkdir "$directory"
+  wget -qO "${directory}.tar.gz" "https://github.com/${repo}/archive/refs/tags/${tag}.tar.gz"
+  tar xzf "${directory}.tar.gz" -C "$directory" --strip-components=1
+}
+
 # install packages needed by shairport
-sudo apt install -y --no-install-recommends build-essential git autoconf automake libtool \
+sudo apt install -y --no-install-recommends build-essential wget autoconf automake libtool \
   libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev \
   libplist-dev libplist-utils libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
 
@@ -60,7 +70,7 @@ sudo rm -f /usr/local/bin/alacconvert /usr/local/lib/libalac.* /usr/local/lib/pk
 sudo ldconfig
 
 # Install NQPTP
-git clone --depth 1 --branch "$NQPTP_VERSION" https://github.com/mikebrady/nqptp.git nqptp
+download_release_archive mikebrady/nqptp "$NQPTP_VERSION" nqptp
 cd nqptp
 autoreconf -fi
 ./configure --with-systemd-startup
@@ -71,7 +81,7 @@ sudo systemctl restart nqptp
 cd ..
 
 # Install Shairport Sync
-git clone --depth 1 --branch "$SHAIRPORT_SYNC_VERSION" https://github.com/mikebrady/shairport-sync.git shairport-sync
+download_release_archive mikebrady/shairport-sync "$SHAIRPORT_SYNC_VERSION" shairport-sync
 cd shairport-sync
 autoreconf -fi
 ./configure \
