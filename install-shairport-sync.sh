@@ -1,12 +1,7 @@
 #!/bin/bash -e
 
-echo
-echo -n "Do you want to install Shairport Sync AirPlay 2 Audio Receiver (shairport-sync)? [y/N] "
-read REPLY
-if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
-
-
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
+PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
 # install packages needed by shairport
 sudo apt install -y --no-install-recommends build-essential git autoconf automake libtool \

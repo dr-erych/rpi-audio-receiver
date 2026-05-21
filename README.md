@@ -90,17 +90,31 @@ Updating the system using `apt-get upgrade` should work however.
 ## Uninstallation
 
 This project does not support uninstall at all. As stated above, it is meant to run on a dedicated device on a clean Raspberry Pi OS. If you choose to use this script along with other services on the same device, or install it on an already configured device, this can lead to unpredictable behaviour and can damage the existing installation permanently.
-However, the important modules can be purged with the following commands. This does however not remove residual files and is experimental:
+However, the important modules can be removed with the following commands. This does not remove every build dependency or source-install residual file and is experimental:
 
-    sudo apt purge -y shairport-sync alac nqptp
+    sudo systemctl disable --now shairport-sync nqptp
+    sudo rm -f /etc/shairport-sync.conf
+    sudo rm -f /usr/local/bin/shairport-sync /usr/local/bin/nqptp
+    sudo rm -f /lib/systemd/system/shairport-sync.service /lib/systemd/system/nqptp.service
     
     sudo apt purge -y raspotify
     sudo rm -f /etc/apt/sources.list.d/raspotify.list
     sudo rm -f /usr/share/keyrings/raspotify_key.asc
 
+    sudo systemctl stop go-librespot-daemon.service
     sudo systemctl disable go-librespot-daemon.service
+    sudo rm -f /lib/systemd/system/go-librespot-daemon.service
     sudo rm -f /usr/bin/go-librespot
-    sudo rm -f /bin/start-go-librespot.sh
+    rm -rf ~/.config/go-librespot
+    sudo systemctl daemon-reload
+
+    sudo rm -f /etc/asound.conf
+    sudo rm -f /etc/modprobe.d/blacklist-onboard-audio.conf
+    sudo sed -e '/options snd-usb-audio index=-2/ s/^#*//' -i /lib/modprobe.d/aliases.conf
+
+HiFiBerry setup also edits `/boot/firmware/config.txt`. To undo it, remove the `dtoverlay=hifiberry-...` line and remove the `,noaudio` suffix from `dtoverlay=vc4-kms-v3d,noaudio`.
+
+The initial setup may also change the hostname and pretty hostname. Change them back with `sudo raspi-config` and `sudo hostnamectl set-hostname --pretty "Raspberry Pi"` if needed.
 
 [This site](https://github.com/mikebrady/shairport-sync/blob/master/INSTALL.md) gives information on residual files of shairplay which could be checked for removal.
 
