@@ -1,7 +1,6 @@
-## Raspberry Pi Audio Receiver - Fork of Project from Nicokaiser working for raspberry pi zero w
+## Raspberry Pi Audio Receiver
 
-A simple, light weight audio receiver with AirPlay 2 and Spotify Connect client.
-Original repository can be found [here](https://github.com/nicokaiser/rpi-audio-receiver).
+A simple, lightweight audio receiver with AirPlay 2 and Spotify Connect clients, adapted from [nicokaiser/rpi-audio-receiver](https://github.com/nicokaiser/rpi-audio-receiver) for Raspberry Pi Zero W setups.
 
 ## Features
 
@@ -9,50 +8,68 @@ Devices like phones, tablets and computers can play audio via this receiver.
 
 ## Requirements
 
-- RaspberryPi Zero W or Zero W 2
-- Internal audio, HDMI, USB or I2S Audio adapter (tested with [SABRENT USB External USB Sound Card](https://www.amazon.de/gp/product/B00IRVQ0F8/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1) and [HifiBerry DAC+](https://www.hifiberry.com/products/dacplus/))
+- Raspberry Pi Zero W, Raspberry Pi Zero 2 W, or another Raspberry Pi with a supported CPU architecture
+- Raspberry Pi OS Legacy
+- Internal audio, HDMI, USB, or I2S audio adapter
+- `wget` and `unzip` for the archive-based installation shown below
+
+Tested with:
+
+- [SABRENT USB External USB Sound Card](https://www.amazon.de/gp/product/B00IRVQ0F8/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1)
+- [HiFiBerry DAC+](https://www.hifiberry.com/products/dacplus/)
+- M-Audio MobilePre USB audio interface
 
 ## Installation
 
-The installation script asks whether to install each component.
+Clone or download this branch, then run the setup scripts you need. Most scripts make system-level changes and install packages, so run them on a clean Raspberry Pi OS install.
 
-    wget -q https://github.com/dr-erych/rpi-audio-receiver/archive/rpi-zero-w.zip && unzip rpi-zero-w.zip && rm rpi-zero-w.zip
+```bash
+wget -q https://github.com/dr-erych/rpi-audio-receiver/archive/rpi-zero-w.zip
+unzip rpi-zero-w.zip
+rm rpi-zero-w.zip
 
-    cd rpi-audio-receiver-rpi-zero-w
+cd rpi-audio-receiver-rpi-zero-w
 
-    // Update packages and set pretty hostname
-    $ ./initialize.sh
+# Update packages, set hostname, and set the visible device name.
+./initialize.sh
 
-    // Sound card
-    // depeding on your needs, one of the following:
-    $ ./enable-hifiberry.sh
-    $ ./enable-usb-audio.sh
-    $ ./install-maudio-driver.sh
+# Sound card setup, depending on your hardware.
+./enable-hifiberry.sh       # HiFiBerry I2S boards
+./enable-usb-audio.sh       # Generic USB audio adapters
+./install-maudio-driver.sh  # M-Audio MobilePre USB
 
-    // Spotify Connect
-    $ ./install-go-librespot.sh  // for Raspberry Pi Zero W v1.x
-    $ ./install-raspotify.sh     // for Raspberry Pi Zero W 2 and Raspberry Pi >= 2
+# Spotify Connect. Pick one.
+./install-go-librespot.sh   # Raspberry Pi Zero W v1.x and other non-arm64 installs
+./install-raspotify.sh      # arm64 Raspberry Pi OS only
 
-    // Airplay 2
-    $ ./install-shairport-sync.sh
-    
-All effects should come into play after restarting the device (mainly the device hostname).
+# AirPlay 2.
+./install-shairport-sync.sh
+```
+
+Reboot after setup so hostname, audio, and service changes are applied consistently:
+
+```bash
+sudo reboot
+```
 
 ### Basic setup
 
-Lets you choose the hostname and the visible device name ("pretty hostname") which is displayed in AirPlay clients and in Spotify.
+`initialize.sh` lets you choose the hostname and visible device name ("pretty hostname") used by AirPlay and Spotify clients. It also updates packages and points `/etc/asound.conf` at the current user's `~/.asoundrc`.
 
 ### AirPlay 2
 
-Installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) AirPlay 2 Audio Receiver with all components needed to allow Synchronized Audio.
+`install-shairport-sync.sh` builds and installs [Shairport Sync](https://github.com/mikebrady/shairport-sync) with AirPlay 2 support, plus [NQPTP](https://github.com/mikebrady/nqptp) for timing support.
 
 ### Spotify Connect
 
-Depending on your system, install go-librespot or raspotify.
+Depending on your system, install either go-librespot or Raspotify.
+
+- `install-go-librespot.sh` downloads the latest go-librespot release for `armv6l`, `armv7l`, `armhf`, or `arm64`/`aarch64`, writes `~/.config/go-librespot/config.yml`, and installs a `go-librespot-daemon` systemd service.
+- `install-raspotify.sh` only supports `arm64`/`aarch64`. It uses the upstream Raspotify install script and then sets the device name and initial volume.
 
 ## Troubleshooting
 
-### Spotify sees the receiver, but playback fails after a power cut
+### Spotify sees the MobilePre receiver, but playback fails after a power cut
 
 If Spotify can see the device but playback fails with:
 
@@ -83,7 +100,7 @@ These scripts are tested and work on a current Raspberry Pi OS Legacy setup on R
 
 ## Upgrading
 
-This project does not really support upgrading to newer versions of this script. It is meant to be adjusted to your needs and run on a clean Raspberry Pi OS install. When something goes wrong, the easiest way is to just wipe the SD card and start over. Since apart from Bluetooth pairing information all parts are stateless, this should be ok.
+This project does not really support upgrading to newer versions of these scripts. It is meant to be adjusted to your needs and run on a clean Raspberry Pi OS install. When something goes wrong, the easiest way is usually to wipe the SD card and start over. Keep a copy of any local changes first, especially audio configuration and go-librespot settings.
 
 Updating the system using `apt-get upgrade` should work however.
 
@@ -92,31 +109,32 @@ Updating the system using `apt-get upgrade` should work however.
 This project does not support uninstall at all. As stated above, it is meant to run on a dedicated device on a clean Raspberry Pi OS. If you choose to use this script along with other services on the same device, or install it on an already configured device, this can lead to unpredictable behaviour and can damage the existing installation permanently.
 However, the important modules can be removed with the following commands. This does not remove every build dependency or source-install residual file and is experimental:
 
-    sudo systemctl disable --now shairport-sync nqptp
-    sudo rm -f /etc/shairport-sync.conf
-    sudo rm -f /usr/local/bin/shairport-sync /usr/local/bin/nqptp
-    sudo rm -f /lib/systemd/system/shairport-sync.service /lib/systemd/system/nqptp.service
-    
-    sudo apt purge -y raspotify
-    sudo rm -f /etc/apt/sources.list.d/raspotify.list
-    sudo rm -f /usr/share/keyrings/raspotify_key.asc
+```bash
+sudo systemctl disable --now shairport-sync nqptp
+sudo rm -f /etc/shairport-sync.conf
+sudo rm -f /usr/local/bin/shairport-sync /usr/local/bin/nqptp
+sudo rm -f /lib/systemd/system/shairport-sync.service /lib/systemd/system/nqptp.service
 
-    sudo systemctl stop go-librespot-daemon.service
-    sudo systemctl disable go-librespot-daemon.service
-    sudo rm -f /lib/systemd/system/go-librespot-daemon.service
-    sudo rm -f /usr/bin/go-librespot
-    rm -rf ~/.config/go-librespot
-    sudo systemctl daemon-reload
+sudo apt purge -y raspotify
+sudo rm -f /etc/apt/sources.list.d/raspotify.list
+sudo rm -f /usr/share/keyrings/raspotify_key.asc
 
-    sudo rm -f /etc/asound.conf
-    sudo rm -f /etc/modprobe.d/blacklist-onboard-audio.conf
-    sudo sed -e '/options snd-usb-audio index=-2/ s/^#*//' -i /lib/modprobe.d/aliases.conf
+sudo systemctl disable --now go-librespot-daemon.service
+sudo rm -f /lib/systemd/system/go-librespot-daemon.service
+sudo rm -f /usr/bin/go-librespot
+rm -rf ~/.config/go-librespot
+sudo systemctl daemon-reload
+
+sudo rm -f /etc/asound.conf
+sudo rm -f /etc/modprobe.d/blacklist-onboard-audio.conf
+sudo sed -e '/options snd-usb-audio index=-2/ s/^#*//' -i /lib/modprobe.d/aliases.conf
+```
 
 HiFiBerry setup also edits `/boot/firmware/config.txt`. To undo it, remove the `dtoverlay=hifiberry-...` line and remove the `,noaudio` suffix from `dtoverlay=vc4-kms-v3d,noaudio`.
 
 The initial setup may also change the hostname and pretty hostname. Change them back with `sudo raspi-config` and `sudo hostnamectl set-hostname --pretty "Raspberry Pi"` if needed.
 
-[This site](https://github.com/mikebrady/shairport-sync/blob/master/INSTALL.md) gives information on residual files of shairplay which could be checked for removal.
+[The Shairport Sync installation guide](https://github.com/mikebrady/shairport-sync/blob/master/INSTALL.md) gives more information on residual files that could be checked for removal.
 
 
 ## Contributing
