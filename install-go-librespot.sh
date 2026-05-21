@@ -30,16 +30,21 @@ echo "Installing Go-librespot"
 
 ARCH=$(uname -m)
 
-if [ "$ARCH" = "armv6l" ]; then
-	ARCH="armv6_rpi"
-elif [ "$ARCH" = "armv7l" ] || [ "$ARCH" = "armv8" ] || [ "$ARCH" = "armhf" ]; then
-  ARCH="armv6"
-elif  [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
-	ARCH="arm64"
-else
-	echo "Platform not supported" 
-  exit 1
-fi
+case "$ARCH" in
+  armv6l)
+    ARCH="armv6_rpi"
+    ;;
+  armv7l|armv8|armhf)
+    ARCH="armv6"
+    ;;
+  arm64|aarch64)
+    ARCH="arm64"
+    ;;
+  *)
+    echo "Platform not supported"
+    exit 1
+    ;;
+esac
 
 sudo apt-get install -y libogg-dev libvorbis-dev libasound2-dev
 
@@ -59,18 +64,6 @@ sudo chown root:root /usr/bin/go-librespot
 sudo chmod 755 /usr/bin/go-librespot
 file /usr/bin/go-librespot
 
-echo "Creating Start Script"
-
-echo "#!/bin/sh
-
-# Traceback Setting
-export GOTRACEBACK=crash
-
-echo 'Librespot-go daemon starting...'
-/usr/bin/go-librespot --config_dir $CONFIG_DIR" | sudo tee /bin/start-go-librespot.sh
-
-sudo chmod a+x /bin/start-go-librespot.sh
-
 systemd_quote() {
   local value=$1
   value=${value//\\/\\\\}
@@ -82,7 +75,8 @@ SYSTEMD_TARGET_HOME=$(systemd_quote "$TARGET_HOME")
 SYSTEMD_CONFIG_DIR=$(systemd_quote "$CONFIG_DIR")
 SYSTEMD_LOCKFILE=$(systemd_quote "$CONFIG_DIR/lockfile")
 
-echo "[Unit]
+cat << EOF | sudo tee /lib/systemd/system/go-librespot-daemon.service > /dev/null
+[Unit]
 Description=go-librespot Daemon
 Wants=network-online.target sound.target
 After=network-online.target sound.target
@@ -102,7 +96,8 @@ SyslogIdentifier=go-librespot
 User=$TARGET_USER
 SupplementaryGroups=audio
 [Install]
-WantedBy=multi-user.target" | sudo tee /lib/systemd/system/go-librespot-daemon.service
+WantedBy=multi-user.target
+EOF
 
 sudo systemctl daemon-reload
 sudo systemctl enable go-librespot-daemon
