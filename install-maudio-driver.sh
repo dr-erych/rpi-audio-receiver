@@ -1,5 +1,13 @@
 #!/bin/bash -e
 
+TARGET_USER="${SUDO_USER:-$(id -un)}"
+TARGET_HOME="$(getent passwd "$TARGET_USER" | cut -d: -f6)"
+
+if [ -z "$TARGET_HOME" ] || [ ! -d "$TARGET_HOME" ]; then
+  echo "Could not resolve home directory for user $TARGET_USER"
+  exit 1
+fi
+
 wget -O madfu-firmware.zip https://github.com/osxmidi/madfu-firmware-mirror/zipball/master
 unzip madfu-firmware.zip -d ./madfu-firmware
 cd madfu-firmware/*
@@ -44,5 +52,12 @@ ctl.!default {
   card MobilePre
 }
 EOF
+
+# ALSA loads ~/.asoundrc before /etc/asound.conf. Since go-librespot runs as the
+# install user, an old ~/.asoundrc can override the system-wide MobilePre config
+# and break playback.
+if [ -f "$TARGET_HOME/.asoundrc" ]; then
+  sudo mv "$TARGET_HOME/.asoundrc" "$TARGET_HOME/.asoundrc.backup.$(date +%Y%m%d-%H%M%S)"
+fi
 
 echo "Please reboot now."
