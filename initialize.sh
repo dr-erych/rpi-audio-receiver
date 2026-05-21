@@ -15,3 +15,5 @@ sudo ln -sfn ~/.asoundrc /etc/asound.conf
 echo "Updating packages"
 sudo apt update
 sudo apt upgrade -y
+
+echo "Setup complete."

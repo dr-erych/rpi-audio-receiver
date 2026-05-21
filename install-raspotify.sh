@@ -13,6 +13,7 @@ echo -n "Do you want to install Spotify Connect (Raspotify)? [y/N] "
 read REPLY
 if [[ ! "$REPLY" =~ ^(yes|y|Y)$ ]]; then exit 0; fi
 
+echo "Installing Raspotify"
 sudo apt-get -y install curl && curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
 
 PRETTY_HOSTNAME=$(hostnamectl status --pretty | tr ' ' '-')
@@ -23,3 +24,5 @@ sudo sed -i 's:#LIBRESPOT_NAME="Librespot:LIBRESPOT_NAME="'"${PRETTY_HOSTNAME}"'
 sudo sed -i 's:#LIBRESPOT_INITIAL_VOLUME="50":LIBRESPOT_INITIAL_VOLUME="20":' /etc/raspotify/conf
 
 sudo systemctl restart raspotify
+
+echo "Raspotify installation complete."

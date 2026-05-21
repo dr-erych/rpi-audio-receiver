@@ -25,9 +25,6 @@ audio_device: default
 EOF
 sudo chown "$TARGET_USER:$TARGET_GROUP" "$CONFIG_DIR/config.yml"
 
-
-echo "Installing Go-librespot"
-
 ARCH=$(uname -m)
 
 case "$ARCH" in
@@ -46,6 +43,7 @@ case "$ARCH" in
     ;;
 esac
 
+echo "Installing go-librespot"
 sudo apt-get install -y libogg-dev libvorbis-dev libasound2-dev
 
 DAEMON_BASE_URL="https://github.com/devgianlu/go-librespot/releases/latest/download"
@@ -53,7 +51,6 @@ DAEMON_ARCHIVE="go-librespot_linux_$ARCH.tar.gz"
 DAEMON_DOWNLOAD_URL="$DAEMON_BASE_URL/$DAEMON_ARCHIVE"
 DAEMON_DOWNLOAD_PATH="/tmp/$DAEMON_ARCHIVE"
 
-echo "Downloading daemon"
 if sudo systemctl is-active --quiet go-librespot-daemon.service; then
   sudo systemctl stop go-librespot-daemon.service
 fi
@@ -103,3 +100,5 @@ sudo systemctl daemon-reload
 sudo systemctl enable go-librespot-daemon
 sudo systemd-analyze verify /lib/systemd/system/go-librespot-daemon.service
 sudo systemctl restart go-librespot-daemon
+
+echo "go-librespot installation complete."

@@ -115,3 +115,5 @@ sudo usermod -a -G gpio shairport-sync
 sudo systemctl daemon-reload
 sudo systemctl enable shairport-sync
 sudo systemctl restart shairport-sync
+
+echo "Shairport Sync installation complete."
