@@ -1,8 +1,5 @@
 #!/bin/bash -e
 
-sudo apt update
-sudo apt upgrade -y
-
 wget -O madfu-firmware.zip https://github.com/osxmidi/madfu-firmware-mirror/zipball/master
 unzip madfu-firmware.zip -d ./madfu-firmware
 cd madfu-firmware/*
