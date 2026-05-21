@@ -54,7 +54,7 @@ DAEMON_DOWNLOAD_URL="$DAEMON_BASE_URL/$DAEMON_ARCHIVE"
 DAEMON_DOWNLOAD_PATH="/tmp/$DAEMON_ARCHIVE"
 
 echo "Downloading daemon"
-if sudo systemctl is-active go-librespot-daemon.service; then
+if sudo systemctl is-active --quiet go-librespot-daemon.service; then
   sudo systemctl stop go-librespot-daemon.service
 fi
 wget "$DAEMON_DOWNLOAD_URL" -O "$DAEMON_DOWNLOAD_PATH"
@@ -81,6 +81,7 @@ Description=go-librespot Daemon
 Wants=network-online.target sound.target
 After=network-online.target sound.target
 RequiresMountsFor=$SYSTEMD_TARGET_HOME
+StartLimitIntervalSec=0
 
 [Service]
 Type=exec
@@ -89,7 +90,6 @@ ExecStartPre=/bin/rm -f $SYSTEMD_LOCKFILE
 ExecStart=/usr/bin/go-librespot --config_dir $SYSTEMD_CONFIG_DIR
 Restart=always
 RestartSec=10
-StartLimitIntervalSec=0
 StandardOutput=journal
 StandardError=journal
 SyslogIdentifier=go-librespot
