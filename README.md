@@ -114,6 +114,9 @@ sudo systemctl disable --now shairport-sync nqptp
 sudo rm -f /etc/shairport-sync.conf
 sudo rm -f /usr/local/bin/shairport-sync /usr/local/bin/nqptp
 sudo rm -f /lib/systemd/system/shairport-sync.service /lib/systemd/system/nqptp.service
+sudo rm -rf /usr/local/include/alac
+sudo rm -f /usr/local/bin/alacconvert /usr/local/lib/libalac.* /usr/local/lib/pkgconfig/alac.pc
+sudo ldconfig
 
 sudo apt purge -y raspotify
 sudo rm -f /etc/apt/sources.list.d/raspotify.list

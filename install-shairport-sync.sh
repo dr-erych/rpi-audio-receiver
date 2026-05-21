@@ -3,18 +3,61 @@
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
-NQPTP_VERSION="${NQPTP_VERSION:-main}"
-SHAIRPORT_SYNC_VERSION="${SHAIRPORT_SYNC_VERSION:-master}"
+latest_stable_tag() {
+  local repo="$1"
+  local tag
+
+  tag=$(git ls-remote --tags --refs "https://github.com/${repo}.git" \
+    | sed -n 's#.*refs/tags/##p' \
+    | grep -E '^[0-9]+([.][0-9]+)*$' \
+    | sort -V \
+    | tail -n 1)
+
+  if [ -z "$tag" ]; then
+    echo "Could not determine the latest stable tag for ${repo}." >&2
+    exit 1
+  fi
+
+  printf '%s\n' "$tag"
+}
 
 # install packages needed by shairport
 sudo apt install -y --no-install-recommends build-essential git autoconf automake libtool \
   libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev \
   libplist-dev libplist-utils libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
 
+NQPTP_VERSION="${NQPTP_VERSION:-$(latest_stable_tag mikebrady/nqptp)}"
+SHAIRPORT_SYNC_VERSION="${SHAIRPORT_SYNC_VERSION:-$(latest_stable_tag mikebrady/shairport-sync)}"
+
+echo "Installing NQPTP ${NQPTP_VERSION}"
+echo "Installing Shairport Sync ${SHAIRPORT_SYNC_VERSION}"
+
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
 
 cd "$TMP_DIR"
+
+# Shairport Sync 5 and recent NQPTP releases install updated systemd units.
+# Remove older unit files first so systemd does not keep using stale startup rules.
+sudo systemctl stop shairport-sync nqptp 2>/dev/null || true
+sudo rm -f \
+  /etc/systemd/system/shairport-sync.service \
+  /etc/systemd/user/shairport-sync.service \
+  /lib/systemd/system/shairport-sync.service \
+  /lib/systemd/user/shairport-sync.service \
+  /usr/local/lib/systemd/system/shairport-sync.service \
+  /usr/local/lib/systemd/user/shairport-sync.service \
+  /etc/dbus-1/system.d/shairport-sync-dbus.conf \
+  /etc/dbus-1/system.d/shairport-sync-mpris.conf \
+  /etc/init.d/shairport-sync \
+  /lib/systemd/system/nqptp.service \
+  /usr/local/lib/systemd/system/nqptp.service
+sudo systemctl daemon-reload
+
+# Older installs built the deprecated Apple ALAC library from source.
+sudo rm -rf /usr/local/include/alac
+sudo rm -f /usr/local/bin/alacconvert /usr/local/lib/libalac.* /usr/local/lib/pkgconfig/alac.pc
+sudo ldconfig
 
 # Install NQPTP
 git clone --depth 1 --branch "$NQPTP_VERSION" https://github.com/mikebrady/nqptp.git nqptp
@@ -23,7 +66,6 @@ autoreconf -fi
 ./configure --with-systemd-startup
 make -j "$(nproc)"
 sudo make install
-sudo setcap 'cap_net_bind_service=+ep' /usr/local/bin/nqptp
 sudo systemctl enable nqptp
 sudo systemctl restart nqptp
 cd ..
@@ -49,6 +91,9 @@ sudo tee /etc/shairport-sync.conf >/dev/null <<EOF
 general = {
   name = "${PRETTY_HOSTNAME:-$(hostname)}";
   output_backend = "alsa";
+  interpolation = "vernier";
+  six_channel_mode = "off";
+  eight_channel_mode = "off";
 }
 
 sessioncontrol = {
