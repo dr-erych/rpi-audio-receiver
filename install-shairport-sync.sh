@@ -3,52 +3,46 @@
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
+NQPTP_VERSION="${NQPTP_VERSION:-main}"
+SHAIRPORT_SYNC_VERSION="${SHAIRPORT_SYNC_VERSION:-master}"
+
 # install packages needed by shairport
 sudo apt install -y --no-install-recommends build-essential git autoconf automake libtool \
   libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev \
   libplist-dev libplist-utils libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
 
-if [[ -z "$TMP_DIR" ]]; then
-    TMP_DIR=$(mktemp -d)
-fi
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
 
-cd $TMP_DIR
-
-# Install ALAC
-wget -O alac-master.zip https://github.com/mikebrady/alac/archive/refs/heads/master.zip
-unzip alac-master.zip
-cd alac-master
-autoreconf -fi
-./configure
-make -j $(nproc)
-sudo make install
-sudo ldconfig
-cd ..
-rm -rf alac-master
+cd "$TMP_DIR"
 
 # Install NQPTP
-wget -O nqptp.zip https://github.com/mikebrady/nqptp/archive/refs/heads/main.zip
-unzip nqptp.zip
-cd nqptp-main
+git clone --depth 1 --branch "$NQPTP_VERSION" https://github.com/mikebrady/nqptp.git nqptp
+cd nqptp
 autoreconf -fi
 ./configure --with-systemd-startup
-make -j $(nproc)
+make -j "$(nproc)"
 sudo make install
 sudo setcap 'cap_net_bind_service=+ep' /usr/local/bin/nqptp
-sudo systemctl restart nqptp.service
+sudo systemctl enable nqptp
+sudo systemctl restart nqptp
 cd ..
-rm -rf nqptp-main
 
 # Install Shairport Sync
-wget -O shairport-sync.zip https://github.com/mikebrady/shairport-sync/archive/refs/heads/master.zip
-unzip shairport-sync.zip
-cd shairport-sync-master
+git clone --depth 1 --branch "$SHAIRPORT_SYNC_VERSION" https://github.com/mikebrady/shairport-sync.git shairport-sync
+cd shairport-sync
 autoreconf -fi
-./configure --sysconfdir=/etc --with-alsa --with-soxr --with-avahi --with-ssl=openssl --with-systemd --with-airplay-2 --with-apple-alac
-make -j $(nproc)
+./configure \
+  --sysconfdir=/etc \
+  --with-alsa \
+  --with-soxr \
+  --with-avahi \
+  --with-ssl=openssl \
+  --with-systemd-startup \
+  --with-airplay-2
+make -j "$(nproc)"
 sudo make install
 cd ..
-rm -rf shairport-sync-master
 
 # Configure Shairport Sync
 sudo tee /etc/shairport-sync.conf >/dev/null <<EOF
@@ -63,5 +57,6 @@ sessioncontrol = {
 EOF
 
 sudo usermod -a -G gpio shairport-sync
-sudo systemctl enable --now nqptp
-sudo systemctl enable --now shairport-sync
+sudo systemctl daemon-reload
+sudo systemctl enable shairport-sync
+sudo systemctl restart shairport-sync
