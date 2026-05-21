@@ -22,6 +22,5 @@ echo dtoverlay=hifiberry-${CARD} >>/tmp/config.txt
 sudo chown $(sudo id -u):$(sudo id -g) /tmp/config.txt
 sudo mv /tmp/config.txt /boot/firmware/config.txt
 
-echo "HiFiBerry setup complete."
-echo "Please reboot now."
-echo "sudo reboot"
+echo "✅ HiFiBerry setup complete."
+echo "🔁 Reboot required: sudo reboot"

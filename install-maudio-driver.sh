@@ -8,7 +8,8 @@ if [ -z "$TARGET_HOME" ] || [ ! -d "$TARGET_HOME" ]; then
   exit 1
 fi
 
-echo "Installing M-Audio MobilePre firmware"
+echo "📦 Installing M-Audio MobilePre firmware"
+echo
 wget -O madfu-firmware.zip https://github.com/osxmidi/madfu-firmware-mirror/zipball/master
 unzip madfu-firmware.zip -d ./madfu-firmware
 cd madfu-firmware/*
@@ -61,6 +62,5 @@ if [ -f "$TARGET_HOME/.asoundrc" ]; then
   sudo mv "$TARGET_HOME/.asoundrc" "$TARGET_HOME/.asoundrc.backup.$(date +%Y%m%d-%H%M%S)"
 fi
 
-echo "M-Audio MobilePre setup complete."
-echo "Please reboot now."
-echo "sudo reboot"
+echo "✅ M-Audio MobilePre setup complete."
+echo "🔁 Reboot required: sudo reboot"

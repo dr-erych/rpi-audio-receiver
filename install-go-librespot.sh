@@ -43,7 +43,8 @@ case "$ARCH" in
     ;;
 esac
 
-echo "Installing go-librespot"
+echo "📦 Installing go-librespot"
+echo
 sudo apt-get install -y libogg-dev libvorbis-dev libasound2-dev
 
 DAEMON_BASE_URL="https://github.com/devgianlu/go-librespot/releases/latest/download"
@@ -101,4 +102,4 @@ sudo systemctl enable go-librespot-daemon
 sudo systemd-analyze verify /lib/systemd/system/go-librespot-daemon.service
 sudo systemctl restart go-librespot-daemon
 
-echo "go-librespot installation complete."
+echo "✅ go-librespot installation complete."

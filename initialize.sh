@@ -12,8 +12,9 @@ sudo hostnamectl set-hostname --pretty "${PRETTY_HOSTNAME:-${CURRENT_PRETTY_HOST
 # Ensure the system audio settings match the user audio settings:
 sudo ln -sfn ~/.asoundrc /etc/asound.conf
 
-echo "Updating packages"
+echo "📦 Updating packages"
+echo
 sudo apt update
 sudo apt upgrade -y
 
-echo "Setup complete."
+echo "✅ Setup complete."

@@ -32,6 +32,8 @@ download_release_archive() {
 }
 
 # install packages needed by shairport
+echo "📦 Installing Shairport Sync build dependencies"
+echo
 sudo apt install -y --no-install-recommends build-essential wget autoconf automake libtool \
   libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev \
   libplist-dev libplist-utils libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
@@ -39,8 +41,9 @@ sudo apt install -y --no-install-recommends build-essential wget autoconf automa
 NQPTP_VERSION="${NQPTP_VERSION:-$(latest_stable_tag mikebrady/nqptp)}"
 SHAIRPORT_SYNC_VERSION="${SHAIRPORT_SYNC_VERSION:-$(latest_stable_tag mikebrady/shairport-sync)}"
 
-echo "Installing NQPTP ${NQPTP_VERSION}"
-echo "Installing Shairport Sync ${SHAIRPORT_SYNC_VERSION}"
+echo "📦 Installing NQPTP ${NQPTP_VERSION}"
+echo "📦 Installing Shairport Sync ${SHAIRPORT_SYNC_VERSION}"
+echo
 
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "$TMP_DIR"' EXIT
@@ -116,4 +119,4 @@ sudo systemctl daemon-reload
 sudo systemctl enable shairport-sync
 sudo systemctl restart shairport-sync
 
-echo "Shairport Sync installation complete."
+echo "✅ Shairport Sync installation complete."
