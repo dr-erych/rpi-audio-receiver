@@ -3,13 +3,23 @@
 PRETTY_HOSTNAME=$(hostnamectl status --pretty)
 PRETTY_HOSTNAME=${PRETTY_HOSTNAME:-$(hostname)}
 
+TARGET_USER=$USER
+TARGET_GROUP=$(id -gn)
+TARGET_HOME=$(cd "$HOME" && pwd -P)
+
+if [ -z "$TARGET_HOME" ] || [ ! -d "$TARGET_HOME" ]; then
+  echo "Could not resolve home directory for user $TARGET_USER"
+  exit 1
+fi
+
 CONFIG_DIR=$HOME/.config/go-librespot
-[ -d $CONFIG_DIR ] || mkdir -p $CONFIG_DIR
-cat << EOF > $CONFIG_DIR/config.yml
+sudo install -d -o "$TARGET_USER" -g "$TARGET_GROUP" "$CONFIG_DIR"
+cat << EOF | sudo tee "$CONFIG_DIR/config.yml" > /dev/null
 device_name: $PRETTY_HOSTNAME
 initial_volume: 20
 device_type: speaker
 EOF
+sudo chown "$TARGET_USER:$TARGET_GROUP" "$CONFIG_DIR/config.yml"
 
 
 echo "Installing Go-librespot"
@@ -55,30 +65,42 @@ echo 'Librespot-go daemon starting...'
 
 sudo chmod a+x /bin/start-go-librespot.sh
 
-GROUP=$(id -gn)
+systemd_quote() {
+  local value=$1
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  printf '"%s"' "$value"
+}
+
+SYSTEMD_TARGET_HOME=$(systemd_quote "$TARGET_HOME")
+SYSTEMD_CONFIG_DIR=$(systemd_quote "$CONFIG_DIR")
+SYSTEMD_LOCKFILE=$(systemd_quote "$CONFIG_DIR/lockfile")
 
 echo "[Unit]
 Description = go-librespot Daemon
+Wants=network-online.target sound.target
+After=network-online.target sound.target
+RequiresMountsFor=$SYSTEMD_TARGET_HOME
 
 [Service]
-After=network-online.target
-Wants=network-online.target
-ExecStart=/bin/start-go-librespot.sh
+Environment=GOTRACEBACK=crash
+ExecStartPre=/bin/rm -f $SYSTEMD_LOCKFILE
+ExecStart=/usr/bin/go-librespot --config_dir $SYSTEMD_CONFIG_DIR
 Restart=always
-RestartSec=3
-StandardOutput=syslog
-StandardError=syslog
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
 SyslogIdentifier=go-librespot
-User=$USER
-Group=$GROUP
+User=$TARGET_USER
+Group=$TARGET_GROUP
 [Install]
 WantedBy=multi-user.target" | sudo tee /lib/systemd/system/go-librespot-daemon.service
 
 sudo systemctl daemon-reload
 sudo systemctl enable go-librespot-daemon
-sudo systemctl start go-librespot-daemon
+sudo systemd-analyze verify /lib/systemd/system/go-librespot-daemon.service
+sudo systemctl restart go-librespot-daemon
 
 
 #required to end the plugin install
 echo "plugininstallend"
-

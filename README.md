@@ -65,7 +65,15 @@ Updating the system using `apt-get upgrade` should work however.
 This project does not support uninstall at all. As stated above, it is meant to run on a dedicated device on a clean Raspberry Pi OS. If you choose to use this script along with other services on the same device, or install it on an already configured device, this can lead to unpredictable behaviour and can damage the existing installation permanently.
 However, the important modules can be purged with the following commands. This does however not remove residual files and is experimental:
 
-    sudo apt-get purge raspotify shairport-sync
+    sudo apt purge -y shairport-sync alac nqptp
+    
+    sudo apt purge -y raspotify
+    sudo rm -f /etc/apt/sources.list.d/raspotify.list
+    sudo rm -f /usr/share/keyrings/raspotify_key.asc
+
+    sudo systemctl disable go-librespot-daemon.service
+    sudo rm /usr/bin/go-librespot
+    sudo rm /bin/start-go-librespot.sh
 
 [This site](https://github.com/mikebrady/shairport-sync/blob/master/INSTALL.md) gives information on residual files of shairplay which could be checked for removal.
 
